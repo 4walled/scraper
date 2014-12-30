@@ -1,0 +1,34 @@
+#!/bin/sh
+
+umask 022
+
+scriptpath="$(readlink -f $0)"
+workdir="${scriptpath%/*}"
+cd "${workdir}" || exit 2
+
+if [ "$(stat -c '%s' scrape.log)" -ge '50000000' ]; then
+	# Keep only one old log.
+	mv scrape.log scrape.log.old
+	rm -f scrape.log.old.gz
+	gzip scrape.log.old
+fi
+
+exec >>scrape.log
+exec 2>&1
+
+echo
+echo "*** Starting update.sh. Started on: '$(date)'"
+
+if [ -f scrape.pidfile ]; then
+	scrape_pid="$(cat scrape.pidfile)"
+	if [ -d "/proc/${scrape_pid}" ]; then
+		echo "------ Seems like scrape is still running but shouldn't, killing it. ($(date))"
+		kill -9 "${scrape_pid}";
+		sleep 2
+	fi
+	rm scrape.pidfile
+fi
+
+echo "--- Starting scrape. Started on: '$(date)'"
+nice --adjustment=19 python scrape.py &
+echo $! > scrape.pidfile

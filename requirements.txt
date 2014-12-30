@@ -1,0 +1,5 @@
+BeautifulSoup==3.2.1
+MySQL-python==1.2.5
+PIL==1.1.7
+PySQLPool==0.3.8
+lxml==3.4.1
