@@ -1,4 +1,5 @@
-scraper
+4walled scraper
 =======
 
-Scraper source code
+This is the [4walled](http://4walled.cc/) scraper source code,
+feel free to improve it.
